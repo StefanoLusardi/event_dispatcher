@@ -1,0 +1,7 @@
+function(setup_example TARGET_NAME TARGET_SRC EXAMPLE_NAME)	
+	set(TARGET_NAME_EXAMPLE ${TARGET_NAME}_${EXAMPLE_NAME})
+	add_executable(${TARGET_NAME_EXAMPLE})
+	target_sources(${TARGET_NAME_EXAMPLE} PRIVATE ${TARGET_SRC})
+	target_compile_features(${TARGET_NAME_EXAMPLE} PUBLIC cxx_std_20)
+	target_link_libraries(${TARGET_NAME_EXAMPLE} PRIVATE ${TARGET_NAME})
+endfunction()

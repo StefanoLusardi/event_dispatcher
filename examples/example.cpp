@@ -1,5 +1,5 @@
-#include <evds/evds.hpp>
-
+#include <evds/event_dispatcher.hpp>
+#include <iostream>
 
 void foo(int i, int j)
 {
@@ -27,12 +27,11 @@ public:
     }
 };
 
-
 int main()
 {
     using namespace std::chrono_literals;
 
-    event_dispatcher bus;
+    evds::event_dispatcher bus;
     bus.start();
 
     bus.add_event_handler("foo", [](int arg) { std::cout << "foo " << arg << std::endl; });
