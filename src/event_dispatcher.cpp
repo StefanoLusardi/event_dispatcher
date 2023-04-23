@@ -7,7 +7,7 @@ event_dispatcher::event_dispatcher() noexcept
 {
 }
 
-event_dispatcher::~event_dispatcher() noexcept
+event_dispatcher::~event_dispatcher()
 {
     stop();
 }

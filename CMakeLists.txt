@@ -47,6 +47,7 @@ endif()
 if(EVDS_ENABLE_EXAMPLES)
 	include(examples)
 	setup_example(${PROJECT_NAME} "examples/example.cpp" "Example")
+	setup_example(${PROJECT_NAME} "examples/func.cpp" "Example_func")
 endif()
 
 if(EVDS_ENABLE_UNIT_TESTS)

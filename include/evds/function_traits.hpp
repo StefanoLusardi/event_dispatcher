@@ -5,44 +5,32 @@
 namespace evds::details
 {
 template <typename RetType, typename... Args>
-struct function_traits_helper
+struct function_wrapper
 {
-    using ReturnT = RetType;
-    using FunctionT = RetType(Args...);
-    using FunctionWrapperT = std::function<FunctionT>;
+    using return_t = RetType;
+    using function_t = RetType(Args...);
+    using wrapper_t = std::function<function_t>;
 };
 
 template <typename T>
 struct function_traits;
 
 template <typename RetType, typename... Args>
-struct function_traits<RetType(Args...)> : function_traits_helper<RetType, Args...>
-{
-};
+struct function_traits<RetType(Args...)> : function_wrapper<RetType, Args...> {};
 
 template <typename RetType, typename... Args>
-struct function_traits<RetType (*)(Args...)> : function_traits_helper<RetType, Args...>
-{
-};
+struct function_traits<RetType (*)(Args...)> : function_wrapper<RetType, Args...> {};
 
 template <typename RetType, typename... Args>
-struct function_traits<RetType (&)(Args...)> : function_traits_helper<RetType, Args...>
-{
-};
+struct function_traits<RetType (&)(Args...)> : function_wrapper<RetType, Args...> {};
 
 template <typename CType, typename RetType, typename... Args>
-struct function_traits<RetType (CType::*)(Args...)> : function_traits_helper<RetType, Args...>
-{
-};
+struct function_traits<RetType (CType::*)(Args...)> : function_wrapper<RetType, Args...> {};
 
 template <typename CType, typename RetType, typename... Args>
-struct function_traits<RetType (CType::*)(Args...) const> : function_traits_helper<RetType, Args...>
-{
-};
+struct function_traits<RetType (CType::*)(Args...) const> : function_wrapper<RetType, Args...> {};
 
 template <typename T>
-struct function_traits : function_traits<decltype(&T::operator())>
-{
-};
+struct function_traits : function_traits<decltype(&T::operator())> {};
 
 }

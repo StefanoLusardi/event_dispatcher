@@ -34,18 +34,29 @@ int main()
     evds::event_dispatcher bus;
     bus.start();
 
-    bus.add_event_handler("foo", [](int arg) { std::cout << "foo " << arg << std::endl; });
-    bus.add_event_handler("foo", []{ std::cout << "empty_2" << std::endl; });
-    bus.add_event_handler("foo", []{ std::cout << "empty_1" << std::endl; });
-    bus.add_event_handler("foo", [](std::string arg) { std::cout << "foo " << arg << std::endl; });
-    bus.add_event_handler("foo", [](std::string& arg) { std::cout << "foo " << arg << std::endl; });
-    bus.add_event_handler("foo", [](std::string&& arg) { std::cout << "foo " << arg << std::endl; });
-    bus.add_event_handler("foo", [](const std::string& arg) { std::cout << "foo " << arg << std::endl; });
-    bus.add_event_handler("foo", [](std::string arg) { std::cout << "foo " << arg << std::endl; });
+    // bus.add_event_handler("foo", [](int arg) { std::cout << "foo " << arg << std::endl; });
+    // bus.add_event_handler("foo", [] { std::cout << "empty_2" << std::endl; });
+    // bus.add_event_handler("foo", [] { std::cout << "empty_1" << std::endl; });
+    // bus.add_event_handler("foo", [](std::string arg) { std::cout << "foo " << arg << std::endl; });
+    // bus.add_event_handler("foo", [](std::string& arg) { std::cout << "foo " << arg << std::endl; });
+    // bus.add_event_handler("foo", [](std::string&& arg) { std::cout << "foo " << arg << std::endl; });
+    // bus.add_event_handler("foo", [](const std::string& arg) { std::cout << "foo " << arg << std::endl; });
+    // bus.add_event_handler("foo", [](std::string arg) { std::cout << "foo " << arg << std::endl; });
+
+    // auto ft = &foo;
+    // void (*f)(int, int) = &foo;
+    bus.add_event_handler("foo", &foo);
+
+    Foo foo_obj;
+    std::function<void(int, std::string)> foo_bind = std::bind(&Foo::bar, &foo_obj, std::placeholders::_1, std::placeholders::_2);
+    bus.add_event_handler("foo_obj", std::move(foo_bind));
 
     bus.push_event("foo");
+    bus.push_event("foo", 1);
+    bus.push_event("foo", Foo{});
     std::this_thread::sleep_for(1s);
 
+/*
     bus.push_event("bar");
     std::this_thread::sleep_for(1s);
 
@@ -62,13 +73,13 @@ int main()
     bus.remove_event_handler("foo");
     bus.push_event("foo");
     std::this_thread::sleep_for(1s);
-    
+
     auto func = [](int arg) { std::cout << "foo " << arg << std::endl; };
     bus.add_event_handler("foo", std::move(func));
 
     std::function<void(int, int)> func_free = foo;
     bus.add_event_handler("foo", std::move(func_free));
-    
+
     std::function<void(int, int)> func_free2 = std::bind(foo, std::placeholders::_1, std::placeholders::_2);
     bus.add_event_handler("foo", std::move(func_free2));
 
@@ -77,14 +88,10 @@ int main()
     bus.add_event_handler("foo_t", &foo_t<int>);
     bus.push_event("foo_t", 9999);
 
-    Foo foo_obj;
-    std::function<void(int, std::string)> foo_bind = std::bind(&Foo::bar, &foo_obj, std::placeholders::_1, std::placeholders::_2);
-    bus.add_event_handler("foo_obj", std::move(foo_bind));
-
     std::function<void(std::string)> bar_bind = std::bind(&Foo::bar_t<std::string>, &foo_obj, std::placeholders::_1);
     bus.add_event_handler("foo_obj_bar_t", std::move(bar_bind));
     bus.push_event("foo_obj_bar_t", std::string("string-foo_obj_bar_t"));
-
+*/
     std::this_thread::sleep_for(std::chrono::seconds(1));
     std::cout << "FINISH!" << std::endl;
 

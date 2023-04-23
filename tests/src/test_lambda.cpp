@@ -167,7 +167,7 @@ TEST_F(evds_lambda, push_event_n_times_same_payload)
     e->start();
     
     const auto event_name = "EVENT_NAME";
-    int expected_value = 123456789;
+    const int expected_value = 123456789;
     int count = -1;
     e->add_event_handler(event_name, [&expected_value, &count, &cv](int expected_value_arg)
     {
