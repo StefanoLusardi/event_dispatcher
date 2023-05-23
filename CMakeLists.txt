@@ -29,7 +29,7 @@ target_include_directories(event_dispatcher PUBLIC
 	$<INSTALL_INTERFACE:CMAKE_INSTALL_INCLUDEDIR>
 )
 
-option(EVDS_ENABLE_UNIT_TESTS "Enable Unit Tests" False)
+option(EVDS_ENABLE_UNIT_TESTS "Enable Unit Tests" True)
 cmake_print_variables(EVDS_ENABLE_UNIT_TESTS)
 
 option(EVDS_ENABLE_EXAMPLES "Enable Examples" True)
@@ -47,11 +47,7 @@ endif()
 
 if(EVDS_ENABLE_EXAMPLES)
 	include(examples)
-	setup_example(${PROJECT_NAME} "examples/example2.cpp" "example2")
-	# setup_example(${PROJECT_NAME} "examples/example.cpp" "example")
-	# setup_example(${PROJECT_NAME} "examples/func.cpp" "func")
-	# setup_example(${PROJECT_NAME} "examples/future_result.cpp" "future_result")
-	# setup_example(${PROJECT_NAME} "examples/application.cpp" "application")
+	setup_example(${PROJECT_NAME} "examples/example.cpp" "Example")
 endif()
 
 if(EVDS_ENABLE_UNIT_TESTS)
