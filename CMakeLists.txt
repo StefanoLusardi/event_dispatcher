@@ -14,13 +14,14 @@ list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/build/modules ${CMAKE_
 
 add_library(event_dispatcher)
 add_library(event_dispatcher::event_dispatcher ALIAS event_dispatcher)
+set_target_properties(event_dispatcher PROPERTIES LINKER_LANGUAGE CXX) 
 
 target_compile_features(event_dispatcher PUBLIC cxx_std_20)
 
 target_sources(event_dispatcher 
 	PUBLIC include/evds/event_dispatcher.hpp
-	PUBLIC include/evds/function_traits.hpp
-	PRIVATE src/event_dispatcher.cpp
+	# PUBLIC include/evds/function_traits.hpp
+	# PRIVATE src/event_dispatcher.cpp
 )
 
 target_include_directories(event_dispatcher PUBLIC
@@ -28,7 +29,7 @@ target_include_directories(event_dispatcher PUBLIC
 	$<INSTALL_INTERFACE:CMAKE_INSTALL_INCLUDEDIR>
 )
 
-option(EVDS_ENABLE_UNIT_TESTS "Enable Unit Tests" True)
+option(EVDS_ENABLE_UNIT_TESTS "Enable Unit Tests" False)
 cmake_print_variables(EVDS_ENABLE_UNIT_TESTS)
 
 option(EVDS_ENABLE_EXAMPLES "Enable Examples" True)
@@ -46,8 +47,11 @@ endif()
 
 if(EVDS_ENABLE_EXAMPLES)
 	include(examples)
-	setup_example(${PROJECT_NAME} "examples/example.cpp" "Example")
-	setup_example(${PROJECT_NAME} "examples/func.cpp" "Example_func")
+	setup_example(${PROJECT_NAME} "examples/example2.cpp" "example2")
+	# setup_example(${PROJECT_NAME} "examples/example.cpp" "example")
+	# setup_example(${PROJECT_NAME} "examples/func.cpp" "func")
+	# setup_example(${PROJECT_NAME} "examples/future_result.cpp" "future_result")
+	# setup_example(${PROJECT_NAME} "examples/application.cpp" "application")
 endif()
 
 if(EVDS_ENABLE_UNIT_TESTS)
