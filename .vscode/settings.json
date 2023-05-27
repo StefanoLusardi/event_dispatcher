@@ -1,4 +1,6 @@
 {
     "cmake.buildDirectory": "${workspaceFolder}/build/${buildType}",
-    "cmake.configureOnEdit": false
+    "cmake.configureOnEdit": false,
+    "cmake.ctest.parallelJobs": 1,
+    "testMate.cpp.test.runtimeLimit": 60
 }

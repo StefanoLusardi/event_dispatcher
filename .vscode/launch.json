@@ -2,24 +2,59 @@
   "version": "0.2.0",
   "configurations": [
     {
-      "name": "localhost (gdb)",
+      "name": "UnitTests (gdb)",
       "type": "cppdbg",
       "request": "launch",
-      "cwd": "${workspaceFolder}/build/Debug/MqttListener",
-      "program": "${workspaceFolder}/build/Debug/MqttListener/MqttListener",
+      "cwd": "${workspaceFolder}/build/Debug/",
+      "program": "${workspaceFolder}/build/Debug/event_dispatcher_UnitTests",
+      "externalConsole": false,
+      "MIMode": "gdb",
+      "setupCommands": [{ "text": "-enable-pretty-printing" }],
+      "args": ["--gtest_brief=0", "--gtest_output=json:$PWD/unit_tests.json", "--gtest_print_time=1"]
+    },
+    {
+      "name": "UnitTests (lldb)",
+      "type": "lldb",
+      "request": "launch",
+      "cwd": "${workspaceFolder}/build/Debug/",
+      "program": "${workspaceFolder}/build/Debug/event_dispatcher_UnitTests",
+      "args": ["--gtest_brief=0", "--gtest_output=json:$PWD/unit_tests.json", "--gtest_print_time=1"]
+    },
+    {
+      "name": "Benchmarks (gdb)",
+      "type": "cppdbg",
+      "request": "launch",
+      "cwd": "${workspaceFolder}/build/Debug/",
+      "program": "${workspaceFolder}/build/Debug/event_dispatcher_Benchmarks",
+      "externalConsole": false,
+      "MIMode": "gdb",
+      "setupCommands": [{ "text": "-enable-pretty-printing" }],
+      "args": ["--benchmark_out=benchmark.json", "--benchmark_out_format=json", "--benchmark_color=true"]
+    },
+    {
+      "name": "Benchmarks (lldb)",
+      "type": "lldb",
+      "request": "launch",
+      "cwd": "${workspaceFolder}/build/Debug/",
+      "program": "${workspaceFolder}/build/Debug/event_dispatcher_Benchmarks",
+      "args": ["--benchmark_out=benchmark.json", "--benchmark_out_format=json", "--benchmark_color=true"]
+    },
+    {
+      "name": "Example (gdb)",
+      "type": "cppdbg",
+      "request": "launch",
+      "cwd": "${workspaceFolder}/build/Debug/",
+      "program": "${workspaceFolder}/build/Debug/event_dispatcher_Example",
       "externalConsole": false,
       "MIMode": "gdb",
       "setupCommands": [{ "text": "-enable-pretty-printing" }]
     },
     {
-      "name": "localhost (lldb)",
+      "name": "Example (lldb)",
       "type": "lldb",
       "request": "launch",
-      "cwd": "${workspaceFolder}/build/Debug/MqttListener",
-      "program": "${workspaceFolder}/build/Debug/MqttListener/MqttListener",
-      "args": [
-        "--mqtt_endpoint", "tcp://localhost:1883"
-      ]
+      "cwd": "${workspaceFolder}/build/Debug/",
+      "program": "${workspaceFolder}/build/Debug/event_dispatcher_Example",
     }
   ]
 }

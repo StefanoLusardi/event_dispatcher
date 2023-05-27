@@ -34,3 +34,13 @@ template <typename T>
 struct function_traits : function_traits<decltype(&T::operator())> {};
 
 }
+
+/*
+
+struct evds::details::function_traits<
+    std::_Bind<
+        RetType (CType::*)(float, int)
+    >
+>
+
+*/

@@ -60,6 +60,7 @@ public:
     ~event_dispatcher() noexcept
     {
         stop();
+        handler_id = 0;
     }
 
     event_dispatcher(const event_dispatcher&) = delete;
@@ -68,12 +69,17 @@ public:
     event_dispatcher& operator=(event_dispatcher&&) = delete;
 
     template <typename... Args>
-    auto get_event_handler_id(std::string&& event_name) const
+    constexpr auto get_event_handler_id(std::string&& event_name) const
     {
-        auto args_hash = std::to_string((typeid(std::decay_t<Args>).hash_code() + ... ));
-        auto event_handler_id = std::move(event_name + args_hash);
-        // std::cout << event_handler_id << std::endl;
-        return event_handler_id;
+        if constexpr(sizeof...(Args) == 0)
+        {
+            return std::move(event_name);
+        }
+        else
+        {
+            auto args_hash = std::to_string((typeid(std::decay_t<Args>).hash_code() + ... ));
+            return std::move(event_name + args_hash);
+        }
     }
 
     template <typename... Args, typename HandlerT>
@@ -83,8 +89,7 @@ public:
         static_assert(std::is_same_v<void, std::invoke_result_t<HandlerT, Args...>>, "\nevent_handler must return void!");
         static_assert(std::is_same_v<std::function<void(std::decay_t<Args>...)>, WrapperT>, 
             "\nevent_handler arguments mismatch in add_handler()!"
-            "\nplease match your handler arguments (input parameters) with your declaration (template specification)"
-        );
+            "\nplease match your handler arguments (input parameters) with your declaration (template specification)");
 
         const auto event_handler_id = get_event_handler_id<Args...>(std::move(event_name));
 
@@ -107,20 +112,20 @@ public:
     }
 
     template <typename... Args>
-    void emit(std::string event_name, Args&&... args)
+    auto emit(std::string event_name, Args... args) -> bool
     {
         const auto event_handler_id = get_event_handler_id<Args...>(std::move(event_name));
 
         std::unique_lock handlers_lock(_handlers_mutex);
         if (!_handlers.contains(event_handler_id))
-            return;
+            return false;
 
         std::vector<std::shared_ptr<base_handler_t>> event_handlers = _handlers.at(event_handler_id);
         handlers_lock.unlock();
 
         for (auto&& h : event_handlers)
         {
-            const event_t event = [e = std::static_pointer_cast<handler_t<Args...>>(h), args...]
+            const event_t event = [e = std::static_pointer_cast<handler_t<Args...>>(h), ... args = std::forward<Args>(args)]
             {
                 return std::invoke(&handler_t<Args...>::call, e.get(), args...);
             };
@@ -131,16 +136,21 @@ public:
 
             _dispatcher_cv.notify_one();
         }
+
+        return true;
     }
 
     auto start(const unsigned int num_threads = 1) -> bool
     {
-        if(_is_running)
-            return false;
+        {
+            std::scoped_lock lock(_is_running_mutex);
+            if(_is_running)
+                return false;
+        }
 
         auto dispatcher_threads_barrier_callback = [this]() noexcept
         {
-            // std::scoped_lock lock(_handlers_mutex);
+            std::scoped_lock lock(_is_running_mutex);
             _is_running = true;
         };
 
@@ -164,10 +174,14 @@ public:
 
     auto stop() -> bool
     {
-        if(!_is_running)
-            return false;
+        {
+            std::scoped_lock lock(_is_running_mutex);
+            if(!_is_running)
+                return false;
+            
+            _is_running = false;
+        }
 
-        _is_running = false;
         _dispatcher_cv.notify_all();
         
         {
@@ -210,11 +224,12 @@ protected:
 
 private:
     std::atomic_bool _is_running;
-    std::mutex _handlers_mutex;
+    std::mutex _is_running_mutex;
     std::unordered_map<std::string, std::vector<std::shared_ptr<base_handler_t>>> _handlers;
-    std::mutex _events_mutex;
+    std::mutex _handlers_mutex;
     std::queue<event_t> _events_queue;
-    std::vector<std::jthread> _dispatcher_threads;
+    std::mutex _events_mutex;
+    std::vector<std::thread> _dispatcher_threads;
     std::condition_variable _dispatcher_cv;
     static unsigned long handler_id;
 };
